@@ -11,12 +11,14 @@
     <link href="CSS/header.css" rel="stylesheet">
     <link href="CSS/footer.css" rel="stylesheet">
     <link href="CSS/forma.css" rel="stylesheet">
+   
 
 </head>
 <body>
 <?php include 'header.php' ;   ?>
 <?php include 'forma.php' ;?>
 <?php include 'footer.php' ;   ?>
+
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

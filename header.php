@@ -2,19 +2,19 @@
     <div class="navbar-content">
         <!-- Links on the left -->
         <div class="navbar-left">
-            <a href="#ballina">BALLINA</a>
+            <a href="index.php">BALLINA</a>
             <a href="#vleresime">VLERËSIME</a>
         </div>
 
         <!-- Logo in the center -->
-        <a href="#home" class="navbar-logo-link">
+        <a href="index.php" class="navbar-logo-link">
             <img src="Images/FINAL_LOGO.png" alt="Gjeje Mjeshtrin Logo" class="navbar-logo">
         </a>
 
         <!-- Buttons on the right -->
         <div class="navbar-buttons">
             <button onclick="window.location.href='#hyr'">Hyr</button>
-            <button onclick="window.location.href='#regjistrohu'">Regjistrohu</button>
+            <button onclick="window.location.href='signup.php'">Regjistrohu</button>
         </div>
     </div>
 </div>

@@ -1,0 +1,174 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    height: 100vh;
+    overflow-x: hidden; /* Eliminon scroll horizontal */
+}
+
+.container {
+    display: flex;
+    width: 100%;
+}
+
+.form-container {
+    width: 50%;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.form-container h2 {
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    color: #333;
+    text-align: center;
+}
+
+.form-container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-container form label {
+    margin-bottom: 5px;
+    font-size: 0.8rem;
+    color: #555;
+}
+
+.form-container form input,
+.form-container form select,
+.form-container form button {
+    margin-bottom: 10px;
+    padding: 8px;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-container form button {
+    background-color: #e2964b;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.form-container form button:hover {
+    background-color: #531f11;
+}
+
+@font-face {
+    font-family: 'Alexandria';
+    src: url('../FONTS/Alexandria\ Whitehouse.otf') format('opentype');
+    font-weight: bold;
+    font-style: bold;
+}
+
+.info-container {
+    width: 50%;
+    background-color: rgba(251, 232, 176, 1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden; /* Siguron që tekstet të mos dalin jashtë seksionit */
+}
+
+.info-container img {
+    width: 150px;
+    position: absolute; /* Logoja është në qendër */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10; /* Mbivendoset mbi tekstet */
+}
+
+.animated-text-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden; /* Tekstet nuk dalin jashtë */
+}
+
+.animated-text {
+    font-size: 2.1rem;
+    font-weight: bold;
+    color: rgba(45,37,88,255);
+    font-family: 'Alexandria';
+    position: absolute;
+    animation: fadeAndMove 6s infinite ease-in-out;
+}
+
+.animated-text:nth-child(1) {
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.animated-text:nth-child(2) {
+    top: 20%;
+    right: 10%;
+    animation-delay: 1s;
+}
+
+.animated-text:nth-child(3) {
+    bottom: 10%;
+    left: 30%;
+    animation-delay: 2s;
+}
+
+.animated-text:nth-child(4) {
+    top: 70%;
+    right: 30%; /* Vendoset në anë, larg logos */
+    animation-delay: 3s;
+}
+
+.animated-text:nth-child(5) {
+    bottom: 20%;
+    right: 15%;
+    animation-delay: 4s;
+}
+
+.animated-text:nth-child(6) {
+    top: 70%;
+    left: 10%;
+    animation-delay: 5s;
+}
+
+.animated-text:nth-child(7) {
+    bottom: 5%;
+    left: 40%;
+    animation-delay: 6s;
+}
+
+.animated-text:nth-child(8) {
+    top: 50%;
+    left: 2%;
+    animation-delay: 6s;
+}
+.animated-text:nth-child(9) {
+    top: 25%;
+    left: 10%;
+    animation-delay: 6s;
+}
+.animated-text:nth-child(10) {
+    top: 50%;
+    left: 65%;
+    animation-delay: 6s;
+}
+
+@keyframes fadeAndMove {
+    0%, 100% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
