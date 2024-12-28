@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up</title>
+    <title>LogIn</title>
     <link rel="icon" type="image/png" href="Images/FINAL_LOGO.png">
    <link href="CSS/signup.css" rel="stylesheet">
 </head>
@@ -11,41 +11,10 @@
 <div class="container">
         <!-- Left Side: Form -->
         <div class="form-container">
-            <h2>Krijo një llogari</h2>
+            <h2>Hyr në platformë</h2>
             <form action="signup.php" method="POST">
-                <label for="emri">Emri</label>
-                <input type="text" id="emri" name="emri" placeholder="Shkruani emrin" required>
-
-                <label for="mbiemri">Mbiemri</label>
-                <input type="text" id="mbiemri" name="mbiemri" placeholder="Shkruani mbiemrin" required>
-
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="Shkruani email-in" required>
-
-                <label for="numri">Numri Kontaktues</label>
-                <input type="text" id="numri" name="numri" placeholder="Shkruani numrin tuaj" required>
-
-                <label for="rajoni">Rajoni</label>
-                <select id="rajoni" name="rajoni" required>
-                    <option value="">Zgjidh Rajonin</option>
-                    <option value="Prishtina">Prishtina</option>
-                    <option value="Mitrovica">Mitrovica</option>
-                    <option value="Peja">Peja</option>
-                    <option value="Prizreni">Prizreni</option>
-                    <option value="Ferizaji">Ferizaji</option>
-                    <option value="Gjilani">Gjilani</option>
-                    <option value="Gjakova">Gjakova</option> 
-                </select>
-
-                <label for="adresa">Adresa</label>
-                <input type="text" id="adresa" name="adresa" placeholder="Shkruani adresën" required>
-
-                <label for="gjinia">Gjinia</label>
-                <select id="gjinia" name="gjinia" required>
-                    <option value="">Zgjidh Gjininë</option>
-                    <option value="mashkull">Mashkull</option>
-                    <option value="femer">Femër</option>
-                </select>
 
                 <label for="roli">Roli</label>
                 <select id="roli" name="roli" required>
@@ -58,7 +27,7 @@
                 <label for="password">Fjalëkalimi</label>
                 <input type="password" id="password" name="password" placeholder="Shkruani fjalëkalimin" required>
 
-                <button type="submit">Regjistrohu</button>
+                <button type="submit">Hyr</button>
             </form>
         </div>
 

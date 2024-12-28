@@ -13,7 +13,7 @@
 
         <!-- Buttons on the right -->
         <div class="navbar-buttons">
-            <button onclick="window.location.href='#hyr'">Hyr</button>
+            <button onclick="window.location.href='login.php'">Hyr</button>
             <button onclick="window.location.href='signup.php'">Regjistrohu</button>
         </div>
     </div>
