@@ -1,7 +1,7 @@
 body {
     margin: 0;
-    /* font-family: Arial, sans-serif;
-    background-color: rgba(251, 232, 176, 1); */
+    font-family: Arial, sans-serif;
+    background-color: rgba(251, 232, 176, 1);
 }
 
 .navbar {
@@ -9,24 +9,56 @@ body {
     align-items: center;
     justify-content: space-between;
     background-color: rgba(251, 232, 176, 1);
-    padding: 20px 50px;
+    padding: 0 50px;
+    height: 100px; /* Siguron që navbar-i ka lartësinë e mjaftueshme */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     width: 100%;
+    position: relative;
+}
+
+.navbar-content {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.navbar-left,
+.navbar-buttons {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Hapësirë ndërmjet elementeve */
+}
+
+.navbar-left a,
+.navbar-buttons button {
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+.navbar-left a:hover {
+    color: #531f11; /* Ngjyra kur kalon miu mbi tekst */
+}
+
+.navbar-logo-link {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%); /* Qendron logon në mes */
 }
 
 .navbar-logo {
-    height: 100px;
-    margin: 0 auto;
-}
-
-.navbar-buttons {
-    display: flex;
-    gap: 20px;
+    height: 80px; /* Madhësia e logos */
+    cursor: pointer; /* Tregon që logoja është e klikueshme */
 }
 
 .navbar-buttons button {
     background-color: #e2964b;
-    color: white;
+    color: black;
     border: none;
     border-radius: 5px;
     padding: 10px 20px;
@@ -38,20 +70,13 @@ body {
 
 .navbar-buttons button:hover {
     background-color: #531f11;
-    transform: translateY(-2px);
+    transform: translateY(-2px); /* Efekt ngritjeje kur kalon miu mbi buton */
+    color:white;
 }
 
 .navbar-buttons button:active {
-    transform: translateY(0);
+    transform: translateY(0); /* Rregullim kur butoni klikohet */
 }
-
-.navbar-content {
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
 
 .carousel img {
     height: 85vh; 

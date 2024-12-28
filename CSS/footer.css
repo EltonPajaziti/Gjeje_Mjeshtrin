@@ -1,0 +1,54 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.footer {
+    background-color: rgba(251, 232, 176, 1); 
+    position: relative;
+    padding: 20px;
+    text-align: center;
+    color: #333;
+}
+
+.footer .waves {
+    position: absolute;
+    top: -50px;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: url('path/to/wave-image.svg') no-repeat center;
+    background-size: cover;
+}
+
+.footer-logo {
+    margin-bottom: 10px;
+}
+
+.footer-logo img {
+    max-width: 150px;
+}
+
+.footer .social-media {
+    margin: 20px 0;
+}
+
+.footer .social-media a {
+    margin: 0 10px;
+    text-decoration: none;
+    color: #333;
+    font-size: 18px;
+}
+
+.footer .contact-info {
+    margin: 20px 0;
+}
+
+.footer .contact-info p {
+    margin: 5px 0;
+}
+
+.footer .copyright {
+    margin-top: 20px;
+    font-size: 14px;
+}

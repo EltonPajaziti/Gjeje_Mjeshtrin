@@ -1,15 +1,24 @@
 <div class="navbar">
-        <div class="navbar-content">
-            <!-- Logo on the left -->
-            <img src="Images/FINAL_LOGO.png" alt="Gjeje Mjeshtrin Logo" class="navbar-logo">
+    <div class="navbar-content">
+        <!-- Links on the left -->
+        <div class="navbar-left">
+            <a href="#ballina">BALLINA</a>
+            <a href="#vleresime">VLERËSIME</a>
+        </div>
 
-            <!-- Buttons on the right -->
-            <div class="navbar-buttons">
-                <button onclick="window.location.href='#hyr'">Hyr</button>
-                <button onclick="window.location.href='#regjistrohu'">Regjistrohu</button>
-            </div>
+        <!-- Logo in the center -->
+        <a href="#home" class="navbar-logo-link">
+            <img src="Images/FINAL_LOGO.png" alt="Gjeje Mjeshtrin Logo" class="navbar-logo">
+        </a>
+
+        <!-- Buttons on the right -->
+        <div class="navbar-buttons">
+            <button onclick="window.location.href='#hyr'">Hyr</button>
+            <button onclick="window.location.href='#regjistrohu'">Regjistrohu</button>
         </div>
     </div>
+</div>
+
 
     <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
   <div class="carousel-inner">
