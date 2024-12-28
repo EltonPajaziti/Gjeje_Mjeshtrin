@@ -74,6 +74,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "<p style='color: red; text-align: center;'>Ju lutem plotësoni të gjitha fushat!</p>";
     }
 }
+
+try {
+    // Shto kolonën 'profile_picture' në tabelën ekzistuese 'users' nëse nuk ekziston
+    $sql = "ALTER TABLE users ADD COLUMN profile_picture VARCHAR(255) DEFAULT NULL";
+    $pdo->exec($sql);
+    // echo "Kolona 'profile_picture' u shtua me sukses në tabelën 'users'.";
+} catch (PDOException $e) {
+    // echo "Gabim gjatë shtimit të kolonës 'profile_picture': " . $e->getMessage();
+}
 ?>
 
 

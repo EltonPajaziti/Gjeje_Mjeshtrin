@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+a:hover {
+    text-decoration: none; /* Largon nënvizimin */
+}
+
+.navbar {
+    background-color: rgba(251, 232, 176, 1);
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0 10px;
+}
+
+.navbar-list {
+    display: flex;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.navbar-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+}
+
+.navbar-item a {
+    text-decoration: none; /* Largon nënvizimin nga linket */
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 5px;
+}
+
+.navbar-item a:hover {
+    background-color: #e2964b; /* Largon ngjyrën gri gjatë hover */
+    text-decoration: none; /* Siguron që nënvizimi nuk shfaqet */
+}
+
+.profile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.profile a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+}
+
+.profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 2px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.profile-image::before {
+    content: "";
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: rgba(251, 232, 176, 1);
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+}
