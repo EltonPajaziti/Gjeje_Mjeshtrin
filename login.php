@@ -1,3 +1,41 @@
+<?php
+// Përfshi lidhjen me bazën e të dhënave
+require_once 'dbconnection.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Kontrollo nëse çelësat ekzistojnë në $_POST
+    $email = $_POST['email'] ?? null;
+    $role = $_POST['roli'] ?? null;
+    $password = $_POST['password'] ?? null;
+
+    if ($email && $role && $password) {
+        try {
+            // Kontrollo nëse përdoruesi ekziston dhe kredencialet janë të sakta
+            $sql = "SELECT * FROM users WHERE email = :email AND role = :role";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([':email' => $email, ':role' => $role]);
+
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($password, $user['password'])) {
+                // Nëse kredencialet përputhen, ridrejto përdoruesin në `home.php`
+                session_start();
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['role'] = $user['role'];
+                header("Location: home.php");
+                exit;
+            } else {
+                echo "<p style='color: red; text-align: center;'>Kredencialet nuk përputhen. Ju lutem provoni përsëri.</p>";
+            }
+        } catch (PDOException $e) {
+            echo "Gabim gjatë hyrjes: " . $e->getMessage();
+        }
+    } else {
+        echo "<p style='color: red; text-align: center;'>Ju lutem plotësoni të gjitha fushat!</p>";
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="sq">
 <head>
@@ -12,7 +50,7 @@
         <!-- Left Side: Form -->
         <div class="form-container">
             <h2>Hyr në platformë</h2>
-            <form action="signup.php" method="POST">
+            <form action="login.php" method="POST">
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" placeholder="Shkruani email-in" required>
 

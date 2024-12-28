@@ -8,6 +8,76 @@
    <link href="CSS/signup.css" rel="stylesheet">
 </head>
 <body>
+
+<?php
+// Përfshi lidhjen me bazën e të dhënave
+require_once 'dbconnection.php';
+
+try {
+    // Krijo tabelën nëse nuk ekziston
+    $sql = "CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        first_name VARCHAR(50) NOT NULL,
+        last_name VARCHAR(50) NOT NULL,
+        email VARCHAR(100) NOT NULL,
+        contact_number VARCHAR(15) NOT NULL,
+        municipality VARCHAR(50) NOT NULL,
+        address VARCHAR(255) NOT NULL,
+        gender ENUM('Mashkull', 'Femër') NOT NULL,
+        role ENUM('Qytetar', 'Mjeshter', 'Admin') NOT NULL,
+        password VARCHAR(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )";
+    $pdo->exec($sql);
+} catch (PDOException $e) {
+    die("Gabim gjatë krijimit të tabelës: " . $e->getMessage());
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Verifiko nëse çelësat ekzistojnë në $_POST për të parandaluar gabimet
+    $first_name = $_POST['emri'] ?? null;
+    $last_name = $_POST['mbiemri'] ?? null;
+    $email = $_POST['email'] ?? null;
+    $contact_number = $_POST['numri'] ?? null;
+    $municipality = $_POST['rajoni'] ?? null;
+    $address = $_POST['adresa'] ?? null;
+    $gender = $_POST['gjinia'] ?? null;
+    $role = $_POST['roli'] ?? null;
+    $password = isset($_POST['password']) ? password_hash($_POST['password'], PASSWORD_BCRYPT) : null;
+
+    // Kontrollo që të gjitha të dhënat të jenë të pranishme
+    if ($first_name && $last_name && $email && $contact_number && $municipality && $address && $gender && $role && $password) {
+        try {
+            // Shto të dhënat në tabelën 'users'
+            $sql = "INSERT INTO users (first_name, last_name, email, contact_number, municipality, address, gender, role, password)
+                    VALUES (:first_name, :last_name, :email, :contact_number, :municipality, :address, :gender, :role, :password)";
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute([
+                ':first_name' => $first_name,
+                ':last_name' => $last_name,
+                ':email' => $email,
+                ':contact_number' => $contact_number,
+                ':municipality' => $municipality,
+                ':address' => $address,
+                ':gender' => $gender,
+                ':role' => $role,
+                ':password' => $password,
+            ]);
+
+            // Ridrejto në faqen e hyrjes
+            header("Location: login.php");
+            exit;
+        } catch (PDOException $e) {
+            echo "Gabim gjatë regjistrimit: " . $e->getMessage();
+        }
+    } else {
+        echo "<p style='color: red; text-align: center;'>Ju lutem plotësoni të gjitha fushat!</p>";
+    }
+}
+?>
+
+
+
 <div class="container">
         <!-- Left Side: Form -->
         <div class="form-container">
