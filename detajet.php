@@ -114,6 +114,53 @@ try {
         button:hover {
             background-color: #e2964b;
         }
+        .form-container {
+            margin-top: 30px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .form-container h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-container label {
+            display: block;
+            margin: 10px 0 5px;
+            font-weight: bold;
+        }
+        .form-container textarea,
+        .form-container input[type="date"],
+        .form-container input[type="radio"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-container .radio-group {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+        }
+        .form-container button {
+            width: 100%;
+            background-color: #fbc02d;
+            color: #333;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #e2964b;
+        }
     </style>
 </head>
 <body>
@@ -138,7 +185,36 @@ try {
                 <img src="<?= htmlspecialchars($foto['foto_path']) ?>" alt="Foto e punës">
             <?php endforeach; ?>
         </div>
-        <button>Rezervo</button>
+        <button onclick="showReservationForm()">Dua ta rezervoj!</button>
     </div>
+
+    <div class="form-container" id="reservation-form" style="display: none;">
+        <h3>Rezervo Mjeshtrin Tuaj!</h3>
+        <form action="rezervo.php" method="POST">
+            <input type="hidden" name="mjeshter_id" value="<?= htmlspecialchars($mjeshter_id) ?>">
+            <label for="problemi">Problemi:</label>
+            <textarea id="problemi" name="problemi" rows="4" required></textarea>
+
+            <label for="specifika">Specifika:</label>
+            <textarea id="specifika" name="specifika" rows="4" required></textarea>
+
+            <label for="data">Data:</label>
+            <input type="date" id="data" name="data" required>
+
+            <label>Mënyra e Pagesës:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="menyra_pageses" value="Para në dorë" required> Me para në dorë</label>
+                <label><input type="radio" name="menyra_pageses" value="Kartelë bankare" required> Me kartelë bankare</label>
+            </div>
+
+            <button type="submit">Rezervo</button>
+        </form>
+    </div>
+
+    <script>
+        function showReservationForm() {
+            document.getElementById('reservation-form').style.display = 'block';
+        }
+    </script>
 </body>
 </html>
