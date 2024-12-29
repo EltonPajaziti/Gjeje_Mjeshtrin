@@ -129,73 +129,73 @@ try {
 
     <div class="container">
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Elektricist">
             <img src="Images/c1.jpg" alt="Electrician">
             <p>Elektricist</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Moler">
             <img src="Images/c3.jpg" alt="Moler">
             <p>Moler</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Mekanik">
             <img src="Images/c4.jpg" alt="Mekanik">
             <p>Mekanik</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Kopshtar">
             <img src="Images/c5.png" alt="Kopshtar">
             <p>Kopshtar</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Mirëmbajtës i shtëpisë">
             <img src="Images/c6.png" alt="Housekeeper">
             <p>Mirëmbajtës i shtëpisë</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Hidraulik">
             <img src="Images/c2.jpg" alt="Hidraulik">
             <p>Hidraulik</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Pllakaxhi">
             <img src="Images/c7.jpg" alt="Pllakaxhi">
             <p>Pllakaxhi</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Murator">
             <img src="Images/c8.png" alt="Murator">
             <p>Murator</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Zdrukthtar">
             <img src="Images/c9.png" alt="Zdrukthtar">
             <p>Zdrukthtar</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Mjeshtër për ngrohje dhe kondicioner">
             <img src="Images/c10.jpg" alt="kondicioner">
             <p>Mjeshtër për ngrohje dhe kondicioner</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Oxhakpastrues">
             <img src="Images/c11.jpg" alt="oxhak">
             <p>Oxhakpastrues</p>
         </a>
     </div>
     <div class="card">
-        <a href="#">
+        <a href="profesionet.php?profesion=Izolues">
             <img src="Images/c12.jpg" alt="Izolues">
             <p>Izolues</p>
         </a>
