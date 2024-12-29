@@ -12,7 +12,7 @@ if (!$profesion) {
 try {
     // Merr të dhënat e mjeshtrave që kanë profesionin e zgjedhur
     $stmt = $pdo->prepare(
-        "SELECT u.first_name, u.last_name, u.profile_picture, u.municipality, u.contact_number, m.sherbimet
+        "SELECT u.id AS user_id, m.id AS mjeshter_id, u.first_name, u.last_name, u.profile_picture, u.municipality, u.contact_number, m.sherbimet
          FROM users u
          INNER JOIN mjeshtrat m ON u.id = m.user_id
          WHERE m.profesion = :profesion"
@@ -127,7 +127,9 @@ try {
                     <p><strong>Rajoni:</strong> <?= htmlspecialchars($mjeshter['municipality']) ?></p>
                     <p><strong>Numri Kontaktues:</strong> <?= htmlspecialchars($mjeshter['contact_number']) ?></p>
                     <p><strong>Shërbimet:</strong> <?= htmlspecialchars($mjeshter['sherbimet']) ?></p>
-                    <button>Mëso më shumë detaje</button>
+                    <a href="detajet.php?mjeshter_id=<?= $mjeshter['mjeshter_id'] ?>" class="btn-details">
+                        <button>Mëso më shumë detaje</button>
+                    </a>
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
