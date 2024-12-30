@@ -46,6 +46,7 @@ try {
     die("Gabim gjatë krijimit të tabelave: " . $e->getMessage());
 }
 
+// Kontrollo nëse përdoruesi ka të dhëna të ruajtura në tabelën mjeshtrat
 try {
     $stmt = $pdo->prepare("SELECT * FROM mjeshtrat WHERE user_id = :user_id");
     $stmt->execute([':user_id' => $user_id]);
@@ -60,6 +61,9 @@ try {
 } catch (PDOException $e) {
     die("Gabim gjatë marrjes së të dhënave të mjeshtrit: " . $e->getMessage());
 }
+
+// Kontrollo nëse të dhënat mungojnë dhe shfaq formularin
+$showForm = !$mjeshter;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $profesion = $_POST['profesion'] ?? null;
@@ -232,7 +236,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </nav>
 
 <div class="container">
-    <?php if ($mjeshter): ?>
+    <?php if (!$mjeshter): ?>
+        <div id="edit-form">
+            <h2>Ju lutemi plotësoni të dhënat për profesionin tuaj</h2>
+            <form method="POST" enctype="multipart/form-data">
+                <label for="profesion">Profesion:</label>
+                <select id="profesion" name="profesion" required>
+                    <option value="">Zgjidhni profesionin</option>
+                    <option value="Elektricist">Elektricist</option>
+                    <option value="Moler">Moler</option>
+                    <!-- Shto opsionet tjera -->
+                </select>
+
+                <label for="sherbimet">Shërbimet që ofroni:</label>
+                <textarea id="sherbimet" name="sherbimet" placeholder="Shkruani shërbimet që ofroni" required></textarea>
+
+                <label for="cmimi">Çmimi:</label>
+                <input type="number" id="cmimi" name="cmimi" placeholder="Shkruani çmimin në €" step="0.01" required>
+
+                <label for="orari_punes">Orari i punës:</label>
+                <input type="text" id="orari_punes" name="orari_punes" placeholder="Shkruani orarin e punës">
+
+                <label for="foto_pune">Shto foto të punës:</label>
+                <input type="file" id="foto_pune" name="foto_pune[]" multiple accept="image/*">
+
+                <button style="margin-bottom: 50px;" type="submit">Ruaj të dhënat</button>
+            </form>
+        </div>
+    <?php else: ?>
         <div class="card" id="mjeshter-card">
             <h3>Profesion: <?= htmlspecialchars($mjeshter['profesion']) ?></h3>
             <p>Shërbimet: <?= htmlspecialchars($mjeshter['sherbimet']) ?></p>
@@ -246,6 +277,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button id="ndrysho-btn" onclick="shfaqFormen()">Ndrysho të dhënat</button>
         </div>
     <?php endif; ?>
+</div>
+
 
     <div id="edit-form" style="display:none;">
         <h2>Informatat për profesionin tuaj</h2>
