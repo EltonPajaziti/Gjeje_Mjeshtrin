@@ -4,6 +4,64 @@ require_once 'dbconnection.php';
 session_start();
 $user_id = $_SESSION['user_id'] ?? null;
 
+// Kontrolloni nëse navigimi është bërë nga faqja "mjeshtrit_favorit.php"
+$source = $_GET['source'] ?? null;
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_favorites']) && $source !== 'favorites') {
+    $mjeshter_id = $_POST['mjeshter_id'] ?? null;
+
+    if ($user_id && $mjeshter_id) {
+        try {
+            // Kontrollo nëse mjeshtri është tashmë në të preferuarat
+            $stmt = $pdo->prepare("SELECT 1 FROM mjeshtrat_favorit WHERE user_id = :user_id AND mjeshter_id = :mjeshter_id");
+            $stmt->execute([':user_id' => $user_id, ':mjeshter_id' => $mjeshter_id]);
+            $exists = $stmt->fetchColumn();
+
+            if ($exists) {
+                // Nëse ekziston, shfaq mesazhin dhe ndal ekzekutimin
+                echo "<script>
+                        alert('Ky mjeshtër tashmë është në listën tuaj të preferuar!');
+                        window.history.back();
+                      </script>";
+                exit; // Ndalo më tej ekzekutimin për të shmangur shtimin dhe alerte të tjera
+            } else {
+                // Nëse nuk ekziston, shto mjeshtrin në të preferuarat
+                $stmt = $pdo->prepare("INSERT INTO mjeshtrat_favorit (user_id, mjeshter_id) VALUES (:user_id, :mjeshter_id)");
+                $stmt->execute([':user_id' => $user_id, ':mjeshter_id' => $mjeshter_id]);
+                echo "<script>
+                        alert('Mjeshtri u shtua në të preferuarat me sukses!');
+                        window.history.back();
+                      </script>";
+                exit;
+            }
+        } catch (PDOException $e) {
+            // Regjistro gabimet e tjera për qëllime debug-u
+            error_log("Gabim gjatë shtimit në të preferuarat: " . $e->getMessage());
+        }
+    } else {
+        echo "<script>
+                alert('Të dhënat e paplota! Përdoruesi ose mjeshtri nuk u përcaktua.');
+                window.history.back();
+              </script>";
+    }
+}
+
+
+try {
+    // Pyetja SQL për të shtuar UNIQUE constraint
+    $sql = "ALTER TABLE mjeshtrat_favorit
+            ADD CONSTRAINT unique_user_mjeshter UNIQUE (user_id, mjeshter_id)";
+    
+    // Ekzekuto pyetjen
+    $pdo->exec($sql);
+    // echo "Constraint-i UNIQUE u shtua me sukses!";
+} catch (PDOException $e) {
+    // Kap gabimet nëse diçka shkon keq
+    // echo "Gabim gjatë shtimit të constraint-it UNIQUE: " . $e->getMessage();
+}
+$user_id = $_SESSION['user_id'] ?? null;
+
 // Shtimi i mjeshtrit në të preferuarat
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_favorites'])) {
     $mjeshter_id = $_POST['mjeshter_id'] ?? null;
@@ -282,12 +340,15 @@ try {
 </head>
 <body>
     <div class="card">
-        <form method="POST" style="display: inline;">
-            <input type="hidden" name="mjeshter_id" value="<?= htmlspecialchars($mjeshter_id) ?>">
-            <button type="submit" name="add_to_favorites" class="favorite-icon">
-                <i class="fa-regular fa-heart"></i> Shto në të preferuarat
-            </button>
-        </form>
+    <?php if ($source !== 'favorites'): ?>
+    <form method="POST" style="display: inline;">
+        <input type="hidden" name="mjeshter_id" value="<?= htmlspecialchars($mjeshter_id) ?>">
+        <button type="submit" name="add_to_favorites" class="favorite-icon">
+            <i class="fa-regular fa-heart"></i> Shto në të preferuarat
+        </button>
+    </form>
+<?php endif; ?>
+
         <div style="text-align: center;">
             <?php if (!empty($mjeshter['profile_picture'])): ?>
                 <img src="<?= htmlspecialchars($mjeshter['profile_picture']) ?>" alt="Foto e profilit" class="profile">

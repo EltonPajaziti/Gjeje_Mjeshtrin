@@ -77,33 +77,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 50%;
             object-fit: cover;
         }
-        .profile-image-section div {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background-color: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
+        .profile-image-section {
+    text-align: center; /* Center the content inside the section */
+}
+
+.profile-image-section div {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto; /* Center the circle within its container */
+}
+
+.profile-text {
+    margin-top: 10px; /* Add spacing below the circle */
+    font-size: 14px; /* Adjust font size as needed */
+    color: #333; /* Optional: Change the text color */
+}
+
+
     </style>
 </head>
 <body>
     <div class="profile-container">
         <form action="profile.php" method="POST" enctype="multipart/form-data">
-            <div class="profile-image-section">
-                <label for="profile_image">
-                    <div>
-                        <?php if (!empty($user['profile_picture'])): ?>
-                            <img id="preview-image" src="<?= htmlspecialchars($user['profile_picture']); ?>" alt="Foto e Profilit">
-                        <?php else: ?>
-                            <img id="preview-image" src="default_profile.png" alt="Foto e Profilit">
-                        <?php endif; ?>
-                    </div>
-                </label>
-                <input type="file" id="profile_image" name="profile_image" style="display: none;" accept="image/*" onchange="previewImage(event)">
-            </div>
+        <div class="profile-image-section">
+    <label for="profile_image">
+        <div>
+            <?php if (!empty($user['profile_picture'])): ?>
+                <img id="preview-image" src="<?= htmlspecialchars($user['profile_picture']); ?>" alt="Foto e Profilit">
+            <?php else: ?>
+                <img id="preview-image" src="default_profile.png" alt="">
+            <?php endif; ?>
+        </div>
+        <p class="profile-text">Foto e Profilit</p>
+    </label>
+    <input type="file" id="profile_image" name="profile_image" style="display: none;" accept="image/*" onchange="previewImage(event)">
+</div>
+
             <div class="profile-details">
                 <p><strong>Emri dhe Mbiemri:</strong> <?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']); ?></p>
                 <p><strong>Email:</strong> <input type="email" name="email" value="<?= htmlspecialchars($user['email']); ?>"></p>
