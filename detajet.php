@@ -32,6 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rezervo_mjeshtrin']))
 
     if ($user_id && $mjeshter_id && $problemi && $specifika && $data && $koha && $menyra_pageses) {
         try {
+            $pdo->beginTransaction();
+
+            // Ruaj rezervimin
             $stmt = $pdo->prepare("INSERT INTO rezervimet (user_id, mjeshter_id, problemi, specifika, data, koha, menyra_pageses)
                                    VALUES (:user_id, :mjeshter_id, :problemi, :specifika, :data, :koha, :menyra_pageses)");
             $stmt->execute([
@@ -43,12 +46,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rezervo_mjeshtrin']))
                 ':koha' => $koha,
                 ':menyra_pageses' => $menyra_pageses
             ]);
+
+            // Merr ID-në e fundit të rezervimit
+            $rezervim_id = $pdo->lastInsertId();
+
+            // Shto statusin "Në pritje" për rezervimin
+            $stmt = $pdo->prepare("INSERT INTO statuset_rezervime (rezervim_id, status) VALUES (:rezervim_id, 'Në pritje')");
+            $stmt->execute([':rezervim_id' => $rezervim_id]);
+
+            $pdo->commit();
+
             echo "<script>
                     alert('Rezervimi u krye me sukses!');
                     window.location.href = 'qytetari.php';
                   </script>";
             exit;
         } catch (PDOException $e) {
+            $pdo->rollBack();
             echo "<script>
                     alert('Gabim gjatë ruajtjes së rezervimit: " . htmlspecialchars($e->getMessage()) . "');
                   </script>";

@@ -227,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="mjeshtrit_ke_pasur.php">Klientët që ke pasur</a>
         </li>
         <li class="navbar-item">
-            <a href="mjeshtrit_pritje.php">Klientët që i ke në pritje</a>
+            <a href="#">Klientët që i ke në pritje</a>
         </li>
         <li class="navbar-item">
             <a href="index.php">Dil</a>
