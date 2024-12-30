@@ -245,7 +245,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="">Zgjidhni profesionin</option>
                     <option value="Elektricist">Elektricist</option>
                     <option value="Moler">Moler</option>
-                    <!-- Shto opsionet tjera -->
+                    <option value="Mekanik">Mekanik</option>
+                <option value="Kopshtar">Kopshtar</option>
+                <option value="Mirëmbajtës">Mirëmbajtës i shtëpisë</option>
+                <option value="Hidraulik">Hidraulik</option>
+                <option value="Pllakaxhi">Pllakaxhi</option>
+                <option value="Murator">Murator</option>
+                <option value="Zdrukthtar">Zdrukthtar</option>
+                <option value="Kondicioner">Mjeshtër për ngrohje dhe kondicioner</option>
+                <option value="Oxhakpastrues">Oxhakpastrues</option>
+                <option value="Izolues">Izolues</option>
                 </select>
 
                 <label for="sherbimet">Shërbimet që ofroni:</label>

@@ -4,6 +4,7 @@ require_once 'dbconnection.php';
 session_start();
 $user_id = $_SESSION['user_id'] ?? null;
 
+// Shtimi i mjeshtrit në të preferuarat
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_favorites'])) {
     $mjeshter_id = $_POST['mjeshter_id'] ?? null;
 
@@ -11,13 +12,72 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_favorites'])) 
         try {
             $stmt = $pdo->prepare("INSERT INTO mjeshtrat_favorit (user_id, mjeshter_id) VALUES (:user_id, :mjeshter_id)");
             $stmt->execute([':user_id' => $user_id, ':mjeshter_id' => $mjeshter_id]);
-            $message = "Mjeshtri u shtua në të preferuarat me sukses!";
+            echo "<script>alert('Mjeshtri u shtua në të preferuarat me sukses!');</script>";
         } catch (PDOException $e) {
-            $message = "Gabim gjatë shtimit në të preferuarat: " . $e->getMessage();
+            echo "<script>alert('Gabim gjatë shtimit në të preferuarat: " . htmlspecialchars($e->getMessage()) . "');</script>";
         }
     } else {
-        $message = "Të dhënat e paplota! Përdoruesi ose mjeshtri nuk u përcaktua.";
+        echo "<script>alert('Të dhënat e paplota! Përdoruesi ose mjeshtri nuk u përcaktua.');</script>";
     }
+}
+
+// Ruajtja e të dhënave në tabelën rezervimet
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rezervo_mjeshtrin'])) {
+    $mjeshter_id = $_POST['mjeshter_id'] ?? null;
+    $problemi = $_POST['problemi'] ?? null;
+    $specifika = $_POST['specifika'] ?? null;
+    $data = $_POST['data'] ?? null;
+    $koha = $_POST['koha'] ?? null;
+    $menyra_pageses = $_POST['menyra_pageses'] ?? null;
+
+    if ($user_id && $mjeshter_id && $problemi && $specifika && $data && $koha && $menyra_pageses) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO rezervimet (user_id, mjeshter_id, problemi, specifika, data, koha, menyra_pageses)
+                                   VALUES (:user_id, :mjeshter_id, :problemi, :specifika, :data, :koha, :menyra_pageses)");
+            $stmt->execute([
+                ':user_id' => $user_id,
+                ':mjeshter_id' => $mjeshter_id,
+                ':problemi' => $problemi,
+                ':specifika' => $specifika,
+                ':data' => $data,
+                ':koha' => $koha,
+                ':menyra_pageses' => $menyra_pageses
+            ]);
+            echo "<script>
+                    alert('Rezervimi u krye me sukses!');
+                    window.location.href = 'qytetari.php';
+                  </script>";
+            exit;
+        } catch (PDOException $e) {
+            echo "<script>
+                    alert('Gabim gjatë ruajtjes së rezervimit: " . htmlspecialchars($e->getMessage()) . "');
+                  </script>";
+        }
+    } else {
+        echo "<script>
+                alert('Ju lutemi plotësoni të gjitha fushat!');
+              </script>";
+    }
+}
+
+try {
+    // Krijo tabelën "rezervimet"
+    $sql = "CREATE TABLE IF NOT EXISTS rezervimet (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        mjeshter_id INT NOT NULL,
+        problemi TEXT NOT NULL,
+        specifika TEXT NOT NULL,
+        data DATE NOT NULL,
+        koha TIME NOT NULL,
+        menyra_pageses ENUM('Para në dorë', 'Kartelë bankare') NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (mjeshter_id) REFERENCES mjeshtrat(id) ON DELETE CASCADE
+    )";
+    $pdo->exec($sql);
+} catch (PDOException $e) {
+    die("Gabim gjatë krijimit të tabelës: " . $e->getMessage());
 }
 
 try {
@@ -207,12 +267,6 @@ try {
     </style>
 </head>
 <body>
-    <?php if (isset($message)): ?>
-        <div style="text-align: center; margin-bottom: 20px; color: green; font-weight: bold;">
-            <?= htmlspecialchars($message) ?>
-        </div>
-    <?php endif; ?>
-
     <div class="card">
         <form method="POST" style="display: inline;">
             <input type="hidden" name="mjeshter_id" value="<?= htmlspecialchars($mjeshter_id) ?>">
@@ -245,16 +299,20 @@ try {
 
     <div class="form-container" id="reservation-form">
         <h3>Rezervo Mjeshtrin Tuaj!</h3>
-        <form action="rezervo.php" method="POST">
+        <form action="" method="POST">
             <input type="hidden" name="mjeshter_id" value="<?= htmlspecialchars($mjeshter_id) ?>">
+
             <label for="problemi">Problemi:</label>
             <textarea id="problemi" name="problemi" rows="4" required></textarea>
 
             <label for="specifika">Specifika:</label>
             <textarea id="specifika" name="specifika" rows="4" required></textarea>
 
-            <label for="data">Data:</label>
+            <label for="data">Data kur dëshironi që të vie Mjeshtri:</label>
             <input type="date" id="data" name="data" required>
+
+            <label for="koha">Koha kur dëshironi që të vie Mjeshtri:</label>
+            <input type="time" id="koha" name="koha" required>
 
             <label>Mënyra e Pagesës:</label>
             <div class="radio-group">
@@ -262,7 +320,7 @@ try {
                 <label><input type="radio" name="menyra_pageses" value="Kartelë bankare" required> Me kartelë bankare</label>
             </div>
 
-            <button type="submit">Rezervo</button>
+            <button type="submit" name="rezervo_mjeshtrin">Rezervo</button>
         </form>
     </div>
 
