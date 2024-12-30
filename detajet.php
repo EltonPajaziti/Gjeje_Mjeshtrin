@@ -1,8 +1,26 @@
 <?php
 require_once 'dbconnection.php';
 
+session_start();
+$user_id = $_SESSION['user_id'] ?? null;
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_to_favorites'])) {
+    $mjeshter_id = $_POST['mjeshter_id'] ?? null;
+
+    if ($user_id && $mjeshter_id) {
+        try {
+            $stmt = $pdo->prepare("INSERT INTO mjeshtrat_favorit (user_id, mjeshter_id) VALUES (:user_id, :mjeshter_id)");
+            $stmt->execute([':user_id' => $user_id, ':mjeshter_id' => $mjeshter_id]);
+            $message = "Mjeshtri u shtua në të preferuarat me sukses!";
+        } catch (PDOException $e) {
+            $message = "Gabim gjatë shtimit në të preferuarat: " . $e->getMessage();
+        }
+    } else {
+        $message = "Të dhënat e paplota! Përdoruesi ose mjeshtri nuk u përcaktua.";
+    }
+}
+
 try {
-    // Krijo tabelën mjeshtrat_favorit
     $sql = "CREATE TABLE IF NOT EXISTS mjeshtrat_favorit (
         id INT AUTO_INCREMENT PRIMARY KEY,
         user_id INT NOT NULL,
@@ -12,10 +30,10 @@ try {
         FOREIGN KEY (mjeshter_id) REFERENCES mjeshtrat(id) ON DELETE CASCADE
     )";
     $pdo->exec($sql);
-    // echo "Tabela 'mjeshtrat_favorit' u krijua me sukses!";
 } catch (PDOException $e) {
     die("Gabim gjatë krijimit të tabelës: " . $e->getMessage());
 }
+
 $mjeshter_id = $_GET['mjeshter_id'] ?? null;
 
 if (!$mjeshter_id) {
@@ -24,14 +42,11 @@ if (!$mjeshter_id) {
 }
 
 try {
-    // Merr të dhënat e mjeshtrit nga tabela 'mjeshtrat'
-    $stmt = $pdo->prepare("
-        SELECT u.first_name, u.last_name, u.profile_picture, u.municipality, u.contact_number, u.email,
-               m.sherbimet, m.cmimi, m.orari_punes
-        FROM mjeshtrat m
-        INNER JOIN users u ON m.user_id = u.id
-        WHERE m.id = :mjeshter_id
-    ");
+    $stmt = $pdo->prepare("SELECT u.first_name, u.last_name, u.profile_picture, u.municipality, u.contact_number, u.email,
+                           m.sherbimet, m.cmimi, m.orari_punes
+                           FROM mjeshtrat m
+                           INNER JOIN users u ON m.user_id = u.id
+                           WHERE m.id = :mjeshter_id");
     $stmt->execute([':mjeshter_id' => $mjeshter_id]);
     $mjeshter = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -40,7 +55,6 @@ try {
         exit;
     }
 
-    // Merr fotot e punës nga tabela 'foto_pune'
     $stmt = $pdo->prepare("SELECT foto_path FROM foto_pune WHERE mjeshter_id = :mjeshter_id");
     $stmt->execute([':mjeshter_id' => $mjeshter_id]);
     $foto_pune = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -55,6 +69,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detajet e Mjeshtrit</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -70,6 +85,7 @@ try {
             border-radius: 8px;
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
         }
         .card img.profile {
             width: 120px;
@@ -99,6 +115,32 @@ try {
             object-fit: cover;
             border-radius: 4px;
         }
+        .favorite-icon {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #fbc02d;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            color: #333;
+        }
+        .favorite-icon:hover {
+            background-color: #e2964b;
+        }
+        .favorite-icon i {
+            color: #e2964b;
+            transition: color 0.3s ease;
+        }
+        .favorite-icon:hover i {
+            color: red;
+        }
         button {
             background-color: #fbc02d;
             border: none;
@@ -123,6 +165,7 @@ try {
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             max-width: 800px;
             margin: 20px auto;
+            display: none;
         }
         .form-container h3 {
             text-align: center;
@@ -164,7 +207,19 @@ try {
     </style>
 </head>
 <body>
+    <?php if (isset($message)): ?>
+        <div style="text-align: center; margin-bottom: 20px; color: green; font-weight: bold;">
+            <?= htmlspecialchars($message) ?>
+        </div>
+    <?php endif; ?>
+
     <div class="card">
+        <form method="POST" style="display: inline;">
+            <input type="hidden" name="mjeshter_id" value="<?= htmlspecialchars($mjeshter_id) ?>">
+            <button type="submit" name="add_to_favorites" class="favorite-icon">
+                <i class="fa-regular fa-heart"></i> Shto në të preferuarat
+            </button>
+        </form>
         <div style="text-align: center;">
             <?php if (!empty($mjeshter['profile_picture'])): ?>
                 <img src="<?= htmlspecialchars($mjeshter['profile_picture']) ?>" alt="Foto e profilit" class="profile">
@@ -176,7 +231,7 @@ try {
         <p><strong>Adresa:</strong> <?= htmlspecialchars($mjeshter['municipality']) ?></p>
         <p><strong>Numri kontaktues:</strong> <?= htmlspecialchars($mjeshter['contact_number']) ?></p>
         <p><strong>Email:</strong> <?= htmlspecialchars($mjeshter['email']) ?></p>
-        <p><strong>Shërbimet:</strong> <?= htmlspecialchars($mjeshter['sherbimet']) ?></p>
+        <p><strong>Shërimet:</strong> <?= htmlspecialchars($mjeshter['sherbimet']) ?></p>
         <p><strong>Çmimi:</strong> <?= htmlspecialchars($mjeshter['cmimi']) ?> €</p>
         <p><strong>Orari i punës:</strong> <?= htmlspecialchars($mjeshter['orari_punes']) ?></p>
         <div class="photos">
@@ -188,7 +243,7 @@ try {
         <button onclick="showReservationForm()">Dua ta rezervoj!</button>
     </div>
 
-    <div class="form-container" id="reservation-form" style="display: none;">
+    <div class="form-container" id="reservation-form">
         <h3>Rezervo Mjeshtrin Tuaj!</h3>
         <form action="rezervo.php" method="POST">
             <input type="hidden" name="mjeshter_id" value="<?= htmlspecialchars($mjeshter_id) ?>">
