@@ -24,40 +24,25 @@ try {
     die("Gabim gjatë verifikimit të mjeshtrit: " . $e->getMessage());
 }
 
-// Përditëso statusin në tabelën `statuset_rezervime` kur klikohen butonat
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rezervim_id'], $_POST['status'])) {
-    $rezervim_id = $_POST['rezervim_id'];
-    $new_status = $_POST['status'];
-
-    try {
-        $stmt = $pdo->prepare("UPDATE statuset_rezervime SET status = :status WHERE rezervim_id = :rezervim_id");
-        $stmt->execute([':status' => $new_status, ':rezervim_id' => $rezervim_id]);
-        header("Location: klientet_ne_pritje.php"); // Rifresko faqen për të reflektuar ndryshimet
-        exit;
-    } catch (PDOException $e) {
-        die("Gabim gjatë përditësimit të statusit: " . $e->getMessage());
-    }
-}
-
-// Shfaq klientët që kanë bërë rezervim për mjeshtrin dhe kanë status "Në pritje", "Aprovuar" ose "Anuluar"
+// Shfaq klientët që kanë bërë rezervim për mjeshtrin dhe kanë status "Përfunduar"
 try {
     $stmt = $pdo->prepare("
         SELECT r.id AS rezervim_id, r.problemi, r.specifika, r.data, r.koha, r.created_at, r.menyra_pageses,
                u.first_name, u.last_name, u.profile_picture, u.municipality, u.contact_number, u.email,
-               m.sherbimet, m.cmimi, s.status
+               m.sherbimet, m.cmimi, s.status, v.koment, v.vleresim
         FROM rezervimet r
         INNER JOIN mjeshtrat m ON r.mjeshter_id = m.id
         INNER JOIN users u ON r.user_id = u.id
         INNER JOIN statuset_rezervime s ON r.id = s.rezervim_id
-        WHERE r.mjeshter_id = :mjeshter_id AND s.status IN ('Në pritje', 'Aprovuar', 'Anuluar')
+        LEFT JOIN vleresimet v ON r.id = v.rezervim_id
+        WHERE r.mjeshter_id = :mjeshter_id AND s.status = 'Përfunduar'
         ORDER BY r.created_at DESC
     ");
     $stmt->execute([':mjeshter_id' => $mjeshter_id]);
-    $rezervimet = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $rezervimet_perfunduara = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Gabim gjatë marrjes së të dhënave: " . $e->getMessage());
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -65,7 +50,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klientët në Pritje</title>
+    <title>Rezervimet e Përfunduara</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -104,54 +89,50 @@ try {
             position: absolute;
             top: 10px;
             left: 10px;
-            background-color: #f0f0f0;
+            background-color: #4caf50;
+            color: white;
             padding: 5px 10px;
             border-radius: 4px;
             font-weight: bold;
             font-size: 14px;
         }
-        .status.pending {
-            background-color: #e2964b;
-        }
-        .status.cancelled {
-            background-color: #f44336;
-            color: white;
-        }
-        .status.approved {
-            background-color: #4caf50;
-            color: white;
-        }
-        .buttons {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .buttons button {
+        .view-review-button {
+            display: block;
+            margin: 20px auto 0;
             padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            background-color: #e2964b;
             color: white;
-            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
         }
-        .cancel { background-color: #f44336; }
-        .approve { background-color: #4caf50; }
-        .complete { background-color: #ffa500; }
+        .view-review-button:hover {
+            background-color: #531f11;
+        }
+        .review-content {
+            display: none;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
     </style>
+    <script>
+        function toggleReviewContent(id) {
+            const content = document.getElementById(`review-content-${id}`);
+            content.style.display = content.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
 </head>
 <body>
-    <h1 style="text-align: center;">Klientët në Pritje</h1>
+    <h1 style="text-align: center;">Rezervimet e Përfunduara</h1>
 
-    <?php if (!empty($rezervimet)): ?>
-        <?php foreach ($rezervimet as $rezervim): ?>
+    <?php if (!empty($rezervimet_perfunduara)): ?>
+        <?php foreach ($rezervimet_perfunduara as $rezervim): ?>
             <div class="card">
-                <div class="status <?php
-                    switch ($rezervim['status']) {
-                        case 'Në pritje': echo 'pending'; break;
-                        case 'Anuluar': echo 'cancelled'; break;
-                        case 'Aprovuar': echo 'approved'; break;
-                    }
-                ?>">
+                <div class="status">
                     <?= htmlspecialchars($rezervim['status']) ?>
                 </div>
                 <img src="<?= htmlspecialchars($rezervim['profile_picture'] ?? 'PROFILE/default_profile.png') ?>" alt="Foto e profilit" class="profile">
@@ -162,26 +143,22 @@ try {
                 <p><strong>Koha kur e ke rezervuar:</strong> <?= htmlspecialchars($rezervim['created_at']) ?></p>
                 <p><strong>Problemi:</strong> <?= htmlspecialchars($rezervim['problemi']) ?></p>
                 <p><strong>Specifika:</strong> <?= htmlspecialchars($rezervim['specifika']) ?></p>
-                <p><strong>Data kur dëshironi që mjeshtri të vie:</strong> <?= htmlspecialchars($rezervim['data']) ?></p>
-                <p><strong>Koha kur dëshironi që mjeshtri të vie:</strong> <?= htmlspecialchars($rezervim['koha']) ?></p>
-                <div class="buttons">
-                    <form method="POST" style="display:inline;">
-                        <input type="hidden" name="rezervim_id" value="<?= htmlspecialchars($rezervim['rezervim_id']) ?>">
-                        <button type="submit" name="status" value="Anuluar" class="cancel">Anulo</button>
-                    </form>
-                    <form method="POST" style="display:inline;">
-                        <input type="hidden" name="rezervim_id" value="<?= htmlspecialchars($rezervim['rezervim_id']) ?>">
-                        <button type="submit" name="status" value="Aprovuar" class="approve">Aprovo</button>
-                    </form>
-                    <form method="POST" style="display:inline;">
-                        <input type="hidden" name="rezervim_id" value="<?= htmlspecialchars($rezervim['rezervim_id']) ?>">
-                        <button type="submit" name="status" value="Përfunduar" class="complete">Eshtë Përfunduar</button>
-                    </form>
-                </div>
+                <p><strong>Data kur mjeshtri e përfundoi punën:</strong> <?= htmlspecialchars($rezervim['data']) ?></p>
+                <p><strong>Koha kur mjeshtri e përfundoi punën:</strong> <?= htmlspecialchars($rezervim['koha']) ?></p>
+
+                <?php if (!empty($rezervim['koment']) || !empty($rezervim['vleresim'])): ?>
+                    <button class="view-review-button" onclick="toggleReviewContent(<?= $rezervim['rezervim_id'] ?>)">Shiko vlerësimin e klientit</button>
+                    <div class="review-content" id="review-content-<?= $rezervim['rezervim_id'] ?>">
+                        <p><strong>Vlerësimi:</strong> <?= htmlspecialchars($rezervim['vleresim']) ?>/10</p>
+                        <p><strong>Komenti:</strong> <?= htmlspecialchars($rezervim['koment']) ?></p>
+                    </div>
+                <?php else: ?>
+                    <p style="color: #888; text-align: center;">Nuk ka ende vlerësim nga klienti.</p>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
     <?php else: ?>
-        <p style="text-align: center; color: #555;">Nuk ka klientë në pritje.</p>
+        <p style="text-align: center; color: #555;">Nuk ka rezervime të përfunduara për këtë mjeshtër.</p>
     <?php endif; ?>
 </body>
 </html>
