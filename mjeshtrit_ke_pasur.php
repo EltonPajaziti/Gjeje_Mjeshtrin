@@ -82,7 +82,69 @@ try {
             font-weight: bold;
             font-size: 14px;
         }
+        .review-button {
+            display: block;
+            margin: 20px auto 0;
+            padding: 10px 20px;
+            background-color: #e2964b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+        }
+        .review-button:hover {
+            background-color: #531f11;
+        }
+        .review-form {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fefefe;
+        }
+        .review-form textarea {
+            width: 100%;
+            height: 100px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            font-size: 14px;
+        }
+        .review-form select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+        .submit-review {
+            display: block;
+            margin: 0 auto;
+            padding: 10px 20px;
+            background-color: #e2964b;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+        }
+        .submit-review:hover {
+            background-color: #531f11;
+        }
     </style>
+    <script>
+       function toggleReviewForm(id) {
+    const form = document.getElementById(`review-form-${id}`);
+    form.style.display = form.style.display === 'block' ? 'none' : 'block';
+}
+
+    </script>
 </head>
 <body>
     <h1 style="text-align: center;">Punët e Përfunduara</h1>
@@ -102,6 +164,20 @@ try {
                 <p><strong>Specifika:</strong> <?= htmlspecialchars($rezervim['specifika']) ?></p>
                 <p><strong>Data kur mjeshtri e përfundoi punën:</strong> <?= htmlspecialchars($rezervim['data']) ?></p>
                 <p><strong>Koha kur mjeshtri e përfundoi punën:</strong> <?= htmlspecialchars($rezervim['koha']) ?></p>
+                <button class="review-button" onclick="toggleReviewForm(<?= $rezervim['rezervim_id'] ?>)">Dëshiron që ta vlerësosh punën e mjeshtrit!</button>
+                <div class="review-form" id="review-form-<?= $rezervim['rezervim_id'] ?>">
+                    <form method="POST" action="submit_review.php">
+                        <textarea name="comment" placeholder="Shkruani komentin tuaj për mjeshtrin..." required></textarea>
+                        <select name="rating" required>
+                            <option value="">Zgjidh një vlerësim</option>
+                            <?php for ($i = 1; $i <= 10; $i++): ?>
+                                <option value="<?= $i ?>"><?= $i ?></option>
+                            <?php endfor; ?>
+                        </select>
+                        <input type="hidden" name="rezervim_id" value="<?= $rezervim['rezervim_id'] ?>">
+                        <button type="submit" class="submit-review">Vlerëso</button>
+                    </form>
+                </div>
             </div>
         <?php endforeach; ?>
     <?php else: ?>
