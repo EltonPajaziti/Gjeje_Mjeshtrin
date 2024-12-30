@@ -1,8 +1,17 @@
 <?php
 require_once 'dbconnection.php';
+session_start();
+
+// Ensure user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header("Location: login.php");
+    exit;
+}
+
+$user_id = $_SESSION['user_id']; // Get logged-in user ID
 
 try {
-    // Krijo tabelën "statuset_rezervime"
+    // Create the "statuset_rezervime" table if it doesn't exist
     $sql = "CREATE TABLE IF NOT EXISTS statuset_rezervime (
         id INT AUTO_INCREMENT PRIMARY KEY,
         rezervim_id INT NOT NULL,
@@ -10,7 +19,6 @@ try {
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (rezervim_id) REFERENCES rezervimet(id) ON DELETE CASCADE
     )";
-
     $pdo->exec($sql);
 
     // echo "Tabela 'statuset_rezervime' u krijua me sukses dhe u lidh me tabelën 'rezervimet'.";
@@ -18,18 +26,20 @@ try {
     die("Gabim gjatë krijimit të tabelës 'statuset_rezervime': " . $e->getMessage());
 }
 
-// Shfaqja e rezervimeve me status "Në pritje", "Anuluar", ose "Aprovuar"
+// Fetch reservations for the logged-in user
 try {
-    $stmt = $pdo->prepare("SELECT r.id AS rezervim_id, r.problemi, r.specifika, r.data, r.koha, r.created_at, r.menyra_pageses,
-                                  u.first_name, u.last_name, u.profile_picture, u.municipality, u.contact_number, u.email,
-                                  m.sherbimet, m.cmimi, s.status
-                           FROM rezervimet r
-                           INNER JOIN mjeshtrat m ON r.mjeshter_id = m.id
-                           INNER JOIN users u ON m.user_id = u.id
-                           INNER JOIN statuset_rezervime s ON r.id = s.rezervim_id
-                           WHERE s.status IN ('Në pritje', 'Anuluar', 'Aprovuar')
-                           ORDER BY r.created_at DESC");
-    $stmt->execute();
+    $stmt = $pdo->prepare("
+        SELECT r.id AS rezervim_id, r.problemi, r.specifika, r.data, r.koha, r.created_at, r.menyra_pageses,
+               u.first_name, u.last_name, u.profile_picture, u.municipality, u.contact_number, u.email,
+               m.sherbimet, m.cmimi, s.status
+        FROM rezervimet r
+        INNER JOIN mjeshtrat m ON r.mjeshter_id = m.id
+        INNER JOIN users u ON m.user_id = u.id
+        INNER JOIN statuset_rezervime s ON r.id = s.rezervim_id
+        WHERE r.user_id = :user_id AND s.status IN ('Në pritje', 'Anuluar', 'Aprovuar')
+        ORDER BY r.created_at DESC
+    ");
+    $stmt->execute([':user_id' => $user_id]);
     $rezervimet = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     die("Gabim gjatë marrjes së të dhënave: " . $e->getMessage());
