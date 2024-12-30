@@ -26,8 +26,8 @@ try {
     echo "Gabim gjatë marrjes së të dhënave: " . $e->getMessage();
 }
 
-// Përpunimi i ndryshimeve
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Handle profile picture upload
     if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === 0) {
         $file_name = $user_id . '_' . basename($_FILES['profile_image']['name']);
         $target_file = $upload_dir . $file_name;
@@ -46,21 +46,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Përditëso fushat e tjera
-    foreach (['email', 'contact_number', 'municipality', 'address', 'gender', 'password'] as $field) {
+    // Prepare fields for update
+    $fields_to_update = [];
+    $params = [':id' => $user_id];
+
+    // Check each field and add to update query if it has changed
+    foreach (['email', 'contact_number', 'municipality', 'address', 'gender'] as $field) {
         if (isset($_POST[$field]) && $_POST[$field] !== $user[$field]) {
-            try {
-                $value = $field === 'password' ? password_hash($_POST[$field], PASSWORD_BCRYPT) : $_POST[$field];
-                $stmt = $pdo->prepare("UPDATE users SET $field = :value WHERE id = :id");
-                $stmt->execute([':value' => $value, ':id' => $user_id]);
-                $success_message = "Të dhënat u përditësuan me sukses!";
-                $user[$field] = $value;
-            } catch (PDOException $e) {
-                $error_message = "Gabim gjatë përditësimit të të dhënave: " . $e->getMessage();
-            }
+            $fields_to_update[] = "$field = :$field";
+            $params[":$field"] = $_POST[$field];
+        }
+    }
+
+    // Check password separately
+    if (!empty($_POST['password'])) {
+        $fields_to_update[] = "password = :password";
+        $params[':password'] = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    }
+
+    // Execute update query if there are fields to update
+    if (!empty($fields_to_update)) {
+        $update_query = "UPDATE users SET " . implode(", ", $fields_to_update) . " WHERE id = :id";
+        try {
+            $stmt = $pdo->prepare($update_query);
+            $stmt->execute($params);
+            $success_message = "Të dhënat u përditësuan me sukses!";
+        } catch (PDOException $e) {
+            $error_message = "Gabim gjatë përditësimit të të dhënave: " . $e->getMessage();
         }
     }
 }
+
 ?>
 
 <!DOCTYPE html>
