@@ -10,6 +10,45 @@ if (!isset($_SESSION['user_id'])) {
 
 $user_id = $_SESSION['user_id']; // ID-ja e qytetarit të kyçur
 
+// Trajto formularin për vlerësim
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rezervim_id'])) {
+    $rezervim_id = $_POST['rezervim_id'];
+    $comment = $_POST['comment'];
+    $rating = $_POST['rating'];
+
+    // Merr mjeshter_id nga rezervimi përkatës
+    try {
+        $stmt = $pdo->prepare("SELECT mjeshter_id FROM rezervimet WHERE id = :rezervim_id AND user_id = :user_id");
+        $stmt->execute([
+            ':rezervim_id' => $rezervim_id,
+            ':user_id' => $user_id
+        ]);
+        $rezervim = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$rezervim) {
+            $error = "Rezervimi nuk ekziston ose nuk është i lidhur me këtë përdorues.";
+        } else {
+            $mjeshter_id = $rezervim['mjeshter_id'];
+
+            // Shto të dhënat në tabelën "vleresimet"
+            $stmt = $pdo->prepare("
+                INSERT INTO vleresimet (qytetar_id, mjeshter_id, rezervim_id, koment, vleresim)
+                VALUES (:qytetar_id, :mjeshter_id, :rezervim_id, :koment, :vleresim)
+            ");
+            $stmt->execute([
+                ':qytetar_id' => $user_id,
+                ':mjeshter_id' => $mjeshter_id,
+                ':rezervim_id' => $rezervim_id,
+                ':koment' => $comment,
+                ':vleresim' => $rating
+            ]);
+            $success = "Vlerësimi u ruajt me sukses!";
+        }
+    } catch (PDOException $e) {
+        $error = "Gabim gjatë shtimit të vlerësimit: " . $e->getMessage();
+    }
+}
+
 // Shfaq rezervimet e përfunduara për qytetarin e kyçur
 try {
     $stmt = $pdo->prepare("
@@ -29,6 +68,26 @@ try {
     die("Gabim gjatë marrjes së të dhënave: " . $e->getMessage());
 }
 
+try {
+    // Krijo tabelën "vleresimet" nëse nuk ekziston
+    $sql = "CREATE TABLE IF NOT EXISTS vleresimet (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        qytetar_id INT NOT NULL,
+        mjeshter_id INT NOT NULL,
+        rezervim_id INT NOT NULL,
+        koment TEXT,
+        vleresim INT NOT NULL CHECK (vleresim BETWEEN 1 AND 10),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (qytetar_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (mjeshter_id) REFERENCES mjeshtrat(id) ON DELETE CASCADE,
+        FOREIGN KEY (rezervim_id) REFERENCES rezervimet(id) ON DELETE CASCADE
+    )";
+    
+    $pdo->exec($sql);
+    // echo "Tabela 'vleresimet' u krijua me sukses!";
+} catch (PDOException $e) {
+    die("Gabim gjatë krijimit të tabelës 'vleresimet': " . $e->getMessage());
+}
 ?>
 
 <!DOCTYPE html>
@@ -94,6 +153,7 @@ try {
             font-size: 16px;
             text-align: center;
         }
+
         .review-button:hover {
             background-color: #531f11;
         }
@@ -134,22 +194,24 @@ try {
             font-size: 16px;
             text-align: center;
         }
+
         .submit-review:hover {
             background-color: #531f11;
         }
     </style>
     <script>
-       function toggleReviewForm(id) {
-    const form = document.getElementById(`review-form-${id}`);
-    form.style.display = form.style.display === 'block' ? 'none' : 'block';
-}
-
+        function toggleReviewForm(id) {
+            const form = document.getElementById(`review-form-${id}`);
+            form.style.display = form.style.display === 'block' ? 'none' : 'block';
+        }
     </script>
 </head>
 <body>
     <h1 style="text-align: center;">Punët e Përfunduara</h1>
 
     <?php if (!empty($rezervimet)): ?>
+        <?php if (isset($success)) echo "<p style='color: green; text-align: center;'>$success</p>"; ?>
+        <?php if (isset($error)) echo "<p style='color: red; text-align: center;'>$error</p>"; ?>
         <?php foreach ($rezervimet as $rezervim): ?>
             <div class="card">
                 <div class="status">
@@ -166,7 +228,7 @@ try {
                 <p><strong>Koha kur mjeshtri e përfundoi punën:</strong> <?= htmlspecialchars($rezervim['koha']) ?></p>
                 <button class="review-button" onclick="toggleReviewForm(<?= $rezervim['rezervim_id'] ?>)">Dëshiron që ta vlerësosh punën e mjeshtrit!</button>
                 <div class="review-form" id="review-form-<?= $rezervim['rezervim_id'] ?>">
-                    <form method="POST" action="submit_review.php">
+                    <form method="POST">
                         <textarea name="comment" placeholder="Shkruani komentin tuaj për mjeshtrin..." required></textarea>
                         <select name="rating" required>
                             <option value="">Zgjidh një vlerësim</option>
