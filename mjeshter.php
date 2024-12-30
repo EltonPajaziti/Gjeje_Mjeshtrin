@@ -227,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <a href="mjeshtrit_ke_pasur.php">Klientët që ke pasur</a>
         </li>
         <li class="navbar-item">
-            <a href="#">Klientët që i ke në pritje</a>
+            <a href="klientet_ne_pritje.php">Klientët që i ke në pritje</a>
         </li>
         <li class="navbar-item">
             <a href="index.php">Dil</a>
@@ -247,12 +247,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="Moler">Moler</option>
                     <option value="Mekanik">Mekanik</option>
                 <option value="Kopshtar">Kopshtar</option>
-                <option value="Mirëmbajtës">Mirëmbajtës i shtëpisë</option>
+                <option value="Mirëmbajtës i shtëpisë">Mirëmbajtës i shtëpisë</option>
                 <option value="Hidraulik">Hidraulik</option>
                 <option value="Pllakaxhi">Pllakaxhi</option>
                 <option value="Murator">Murator</option>
                 <option value="Zdrukthtar">Zdrukthtar</option>
-                <option value="Kondicioner">Mjeshtër për ngrohje dhe kondicioner</option>
+                <option value="Mjeshtër për ngrohje dhe kondicioner">Mjeshtër për ngrohje dhe kondicioner</option>
                 <option value="Oxhakpastrues">Oxhakpastrues</option>
                 <option value="Izolues">Izolues</option>
                 </select>
