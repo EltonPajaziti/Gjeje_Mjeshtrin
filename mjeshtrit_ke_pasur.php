@@ -16,45 +16,58 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rezervim_id'])) {
     $comment = $_POST['comment'];
     $rating = $_POST['rating'];
 
-    // Merr mjeshter_id nga rezervimi përkatës
     try {
-        $stmt = $pdo->prepare("SELECT mjeshter_id FROM rezervimet WHERE id = :rezervim_id AND user_id = :user_id");
+        // Kontrollo nëse vlerësimi tashmë ekziston
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM vleresimet WHERE rezervim_id = :rezervim_id AND qytetar_id = :qytetar_id");
         $stmt->execute([
             ':rezervim_id' => $rezervim_id,
-            ':user_id' => $user_id
+            ':qytetar_id' => $user_id
         ]);
-        $rezervim = $stmt->fetch(PDO::FETCH_ASSOC);
+        $already_rated = $stmt->fetchColumn() > 0;
 
-        if (!$rezervim) {
-            $error = "Rezervimi nuk ekziston ose nuk është i lidhur me këtë përdorues.";
+        if ($already_rated) {
+            $error = "Ju tashmë e keni vlerësuar këtë punë.";
         } else {
-            $mjeshter_id = $rezervim['mjeshter_id'];
-
-            // Shto të dhënat në tabelën "vleresimet"
-            $stmt = $pdo->prepare("
-                INSERT INTO vleresimet (qytetar_id, mjeshter_id, rezervim_id, koment, vleresim)
-                VALUES (:qytetar_id, :mjeshter_id, :rezervim_id, :koment, :vleresim)
-            ");
+            // Merr mjeshter_id nga rezervimi përkatës
+            $stmt = $pdo->prepare("SELECT mjeshter_id FROM rezervimet WHERE id = :rezervim_id AND user_id = :user_id");
             $stmt->execute([
-                ':qytetar_id' => $user_id,
-                ':mjeshter_id' => $mjeshter_id,
                 ':rezervim_id' => $rezervim_id,
-                ':koment' => $comment,
-                ':vleresim' => $rating
+                ':user_id' => $user_id
             ]);
-            $success = "Vlerësimi u ruajt me sukses!";
+            $rezervim = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$rezervim) {
+                $error = "Rezervimi nuk ekziston ose nuk është i lidhur me këtë përdorues.";
+            } else {
+                $mjeshter_id = $rezervim['mjeshter_id'];
+
+                // Shto të dhënat në tabelën "vleresimet"
+                $stmt = $pdo->prepare("
+                    INSERT INTO vleresimet (qytetar_id, mjeshter_id, rezervim_id, koment, vleresim)
+                    VALUES (:qytetar_id, :mjeshter_id, :rezervim_id, :koment, :vleresim)
+                ");
+                $stmt->execute([
+                    ':qytetar_id' => $user_id,
+                    ':mjeshter_id' => $mjeshter_id,
+                    ':rezervim_id' => $rezervim_id,
+                    ':koment' => $comment,
+                    ':vleresim' => $rating
+                ]);
+                $success = "Vlerësimi u ruajt me sukses!";
+            }
         }
     } catch (PDOException $e) {
         $error = "Gabim gjatë shtimit të vlerësimit: " . $e->getMessage();
     }
 }
 
-// Shfaq rezervimet e përfunduara për qytetarin e kyçur
+// Shfaq rezervimet e përfunduara për qytetarin e kyçur dhe kontrollo nëse janë vlerësuar
 try {
     $stmt = $pdo->prepare("
         SELECT r.id AS rezervim_id, r.problemi, r.specifika, r.data, r.koha, r.created_at, r.menyra_pageses,
                u.first_name AS mjeshter_name, u.last_name AS mjeshter_lastname, u.profile_picture, 
-               m.sherbimet, m.cmimi, s.status
+               m.sherbimet, m.cmimi, s.status,
+               (SELECT COUNT(*) FROM vleresimet v WHERE v.rezervim_id = r.id AND v.qytetar_id = :user_id) AS rated
         FROM rezervimet r
         INNER JOIN mjeshtrat m ON r.mjeshter_id = m.id
         INNER JOIN users u ON m.user_id = u.id
@@ -68,8 +81,8 @@ try {
     die("Gabim gjatë marrjes së të dhënave: " . $e->getMessage());
 }
 
+// Krijo tabelën "vleresimet" nëse nuk ekziston
 try {
-    // Krijo tabelën "vleresimet" nëse nuk ekziston
     $sql = "CREATE TABLE IF NOT EXISTS vleresimet (
         id INT AUTO_INCREMENT PRIMARY KEY,
         qytetar_id INT NOT NULL,
@@ -82,9 +95,7 @@ try {
         FOREIGN KEY (mjeshter_id) REFERENCES mjeshtrat(id) ON DELETE CASCADE,
         FOREIGN KEY (rezervim_id) REFERENCES rezervimet(id) ON DELETE CASCADE
     )";
-    
     $pdo->exec($sql);
-    // echo "Tabela 'vleresimet' u krijua me sukses!";
 } catch (PDOException $e) {
     die("Gabim gjatë krijimit të tabelës 'vleresimet': " . $e->getMessage());
 }
@@ -153,7 +164,6 @@ try {
             font-size: 16px;
             text-align: center;
         }
-
         .review-button:hover {
             background-color: #531f11;
         }
@@ -194,7 +204,6 @@ try {
             font-size: 16px;
             text-align: center;
         }
-
         .submit-review:hover {
             background-color: #531f11;
         }
@@ -226,20 +235,22 @@ try {
                 <p><strong>Specifika:</strong> <?= htmlspecialchars($rezervim['specifika']) ?></p>
                 <p><strong>Data kur mjeshtri e përfundoi punën:</strong> <?= htmlspecialchars($rezervim['data']) ?></p>
                 <p><strong>Koha kur mjeshtri e përfundoi punën:</strong> <?= htmlspecialchars($rezervim['koha']) ?></p>
-                <button class="review-button" onclick="toggleReviewForm(<?= $rezervim['rezervim_id'] ?>)">Dëshiron që ta vlerësosh punën e mjeshtrit!</button>
-                <div class="review-form" id="review-form-<?= $rezervim['rezervim_id'] ?>">
-                    <form method="POST">
-                        <textarea name="comment" placeholder="Shkruani komentin tuaj për mjeshtrin..." required></textarea>
-                        <select name="rating" required>
-                            <option value="">Zgjidh një vlerësim</option>
-                            <?php for ($i = 1; $i <= 10; $i++): ?>
-                                <option value="<?= $i ?>"><?= $i ?></option>
-                            <?php endfor; ?>
-                        </select>
-                        <input type="hidden" name="rezervim_id" value="<?= $rezervim['rezervim_id'] ?>">
-                        <button type="submit" class="submit-review">Vlerëso</button>
-                    </form>
-                </div>
+                <?php if (!$rezervim['rated']): ?>
+                    <button class="review-button" onclick="toggleReviewForm(<?= $rezervim['rezervim_id'] ?>)">Dëshiron që ta vlerësosh punën e mjeshtrit!</button>
+                    <div class="review-form" id="review-form-<?= $rezervim['rezervim_id'] ?>">
+                        <form method="POST">
+                            <textarea name="comment" placeholder="Shkruani komentin tuaj për mjeshtrin..." required></textarea>
+                            <select name="rating" required>
+                                <option value="">Zgjidh një vlerësim</option>
+                                <?php for ($i = 1; $i <= 10; $i++): ?>
+                                    <option value="<?= $i ?>"><?= $i ?></option>
+                                <?php endfor; ?>
+                            </select>
+                            <input type="hidden" name="rezervim_id" value="<?= $rezervim['rezervim_id'] ?>">
+                            <button type="submit" class="submit-review">Vlerëso</button>
+                        </form>
+                    </div>
+                <?php endif; ?>
             </div>
         <?php endforeach; ?>
     <?php else: ?>
