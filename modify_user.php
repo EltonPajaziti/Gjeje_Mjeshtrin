@@ -8,34 +8,34 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-// Merr ID-në e qytetarit për të cilin do të bëhet modifikimi
+// Merr ID-në e përdoruesit për të cilin do të bëhet modifikimi
 if (!isset($_GET['id'])) {
     die("ID e përdoruesit nuk është specifikuar.");
 }
 
-$qytetar_id = $_GET['id'];
+$perdorues_id = $_GET['id'];
 
-// Merr të dhënat e qytetarit nga databaza
+// Merr të dhënat e përdoruesit nga databaza
 try {
-    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id AND role = 'Qytetar'");
-    $stmt->execute([':id' => $qytetar_id]);
-    $qytetar = $stmt->fetch(PDO::FETCH_ASSOC);
+    $stmt = $pdo->prepare("SELECT * FROM users WHERE id = :id");
+    $stmt->execute([':id' => $perdorues_id]);
+    $perdorues = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (!$qytetar) {
-        die("Qytetari nuk ekziston ose nuk ka rolin 'Qytetar'.");
+    if (!$perdorues) {
+        die("Përdoruesi nuk ekziston.");
     }
 } catch (PDOException $e) {
-    die("Gabim gjatë marrjes së të dhënave të qytetarit: " . $e->getMessage());
+    die("Gabim gjatë marrjes së të dhënave të përdoruesit: " . $e->getMessage());
 }
 
-// Përditëso të dhënat e qytetarit
+// Përditëso të dhënat e përdoruesit
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fields_to_update = [];
-    $params = [':id' => $qytetar_id];
+    $params = [':id' => $perdorues_id];
 
     // Check every field for updates
     foreach (['email', 'contact_number', 'municipality', 'address', 'gender'] as $field) {
-        if (isset($_POST[$field]) && $_POST[$field] !== $qytetar[$field]) {
+        if (isset($_POST[$field]) && $_POST[$field] !== $perdorues[$field]) {
             $fields_to_update[] = "$field = :$field";
             $params[":$field"] = $_POST[$field];
         }
@@ -54,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mkdir($upload_dir, 0777, true);
         }
 
-        $file_name = $qytetar_id . '_' . basename($_FILES['profile_image']['name']);
+        $file_name = $perdorues_id . '_' . basename($_FILES['profile_image']['name']);
         $target_file = $upload_dir . $file_name;
 
         if (move_uploaded_file($_FILES['profile_image']['tmp_name'], $target_file)) {
@@ -83,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modifiko Qytetarin</title>
+    <title>Modifiko Përdoruesin</title>
     <link rel="stylesheet" href="CSS/profile.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -128,12 +128,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="profile-container">
-        <form action="modify_user.php?id=<?= htmlspecialchars($qytetar_id); ?>" method="POST" enctype="multipart/form-data">
+        <form action="modify_user.php?id=<?= htmlspecialchars($perdorues_id); ?>" method="POST" enctype="multipart/form-data">
             <div class="profile-image-section">
                 <label for="profile_image">
                     <div>
-                        <?php if (!empty($qytetar['profile_picture'])): ?>
-                            <img id="preview-image" src="<?= htmlspecialchars($qytetar['profile_picture']); ?>" alt="Foto e Profilit">
+                        <?php if (!empty($perdorues['profile_picture'])): ?>
+                            <img id="preview-image" src="<?= htmlspecialchars($perdorues['profile_picture']); ?>" alt="Foto e Profilit">
                         <?php else: ?>
                             <img id="preview-image" src="PROFILE/default_profile.png" alt="Foto e Profilit">
                         <?php endif; ?>
@@ -144,12 +144,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="profile-details">
-                <p><strong>Emri dhe Mbiemri:</strong> <?= htmlspecialchars($qytetar['first_name'] . ' ' . $qytetar['last_name']); ?></p>
-                <p><strong>Email:</strong> <input type="email" name="email" value="<?= htmlspecialchars($qytetar['email']); ?>"></p>
-                <p><strong>Numri Kontaktues:</strong> <input type="text" name="contact_number" value="<?= htmlspecialchars($qytetar['contact_number']); ?>"></p>
-                <p><strong>Rajoni:</strong> <input type="text" name="municipality" value="<?= htmlspecialchars($qytetar['municipality']); ?>"></p>
-                <p><strong>Adresa:</strong> <input type="text" name="address" value="<?= htmlspecialchars($qytetar['address']); ?>"></p>
-                <p><strong>Gjinia:</strong> <input type="text" name="gender" value="<?= htmlspecialchars($qytetar['gender']); ?>"></p>
+                <p><strong>Emri dhe Mbiemri:</strong> <?= htmlspecialchars($perdorues['first_name'] . ' ' . $perdorues['last_name']); ?></p>
+                <p><strong>Email:</strong> <input type="email" name="email" value="<?= htmlspecialchars($perdorues['email']); ?>"></p>
+                <p><strong>Numri Kontaktues:</strong> <input type="text" name="contact_number" value="<?= htmlspecialchars($perdorues['contact_number']); ?>"></p>
+                <p><strong>Rajoni:</strong> <input type="text" name="municipality" value="<?= htmlspecialchars($perdorues['municipality']); ?>"></p>
+                <p><strong>Adresa:</strong> <input type="text" name="address" value="<?= htmlspecialchars($perdorues['address']); ?>"></p>
+                <p><strong>Gjinia:</strong> <input type="text" name="gender" value="<?= htmlspecialchars($perdorues['gender']); ?>"></p>
                 <p><strong>Fjalëkalimi:</strong> <input type="password" name="password" placeholder="Ndrysho fjalëkalimin"></p>
             </div>
             <button type="submit" class="butoni">Ruaj Ndryshimet</button>

@@ -17,7 +17,7 @@ try {
     $mjeshter = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$mjeshter) {
-        die("Ky përdorues nuk është mjeshtër.");
+        die("Ky përdorues nuk i ka plotësuar ende të dhënat që duhet t'i plotësoj një mjeshtër! Plotësoji ato, CKA PO PRET!?");
     }
     $mjeshter_id = $mjeshter['id'];
 } catch (PDOException $e) {
