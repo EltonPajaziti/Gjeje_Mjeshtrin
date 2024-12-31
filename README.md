@@ -31,7 +31,7 @@
 - Një shfletues modern (p.sh., Chrome, Firefox)
 
 ### Hapat për Instalimin
-1. Shkarkoni ose klononi projektin nga [repository](#) (vendosni linkun e repository-t këtu).
+1. Shkarkoni ose klononi projektin nga [repository](https://github.com/EltonPajaziti/Gjeje_Mjeshtrin) .
 2. Vendosni skedarët e projektit në dosjen `htdocs` të serverit tuaj lokal.
 3. Importoni skedarin `gjeje_mjeshtrin.sql` në phpMyAdmin për të krijuar bazën e të dhënave.
 4. Hapni skedarin `config.php` dhe përditësoni kredencialet e bazës së të dhënave sipas nevojës.
