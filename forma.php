@@ -2,13 +2,13 @@
         <!-- Form Section -->
         <div class="form-container">
             <h2>Kontakto me Ne</h2>
-            <form action="#" method="post">
+            <form action="send.php" method="post">
                 <input type="text" name="name" placeholder="Emri" required>
                 <input type="email" name="email" placeholder="E-mail" required>
                 <input type="text" name="phone" placeholder="Telefoni" required>
                 <input type="text" name="subject" placeholder="Tema" required>
                 <textarea name="message" placeholder="Mesazhi" rows="5" required></textarea>
-                <button type="submit">Dërgo Mesazhin</button>
+                <button type="submit" name="send">Dërgo Mesazhin</button>
             </form>
         </div>
 
