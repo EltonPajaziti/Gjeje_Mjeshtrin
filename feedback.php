@@ -17,7 +17,7 @@
             <img src="Images/hana.jpeg" alt="Foto e përdoruesit">
             <h4>Hana Qerimi</h4>
             <p>
-                "Shumë i kënaqur me eksperiencën! Do ta rekomandoj për të gjithë."
+                "Shumë e kënaqur me eksperiencën! Do ta rekomandoj për të gjithë."
             </p>
         </div>
 
