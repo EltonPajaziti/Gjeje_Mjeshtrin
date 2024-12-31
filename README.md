@@ -34,7 +34,7 @@
 1. Shkarkoni ose klononi projektin nga [repository](https://github.com/EltonPajaziti/Gjeje_Mjeshtrin) .
 2. Vendosni skedarët e projektit në dosjen `htdocs` të serverit tuaj lokal.
 3. Importoni skedarin `gjeje_mjeshtrin.sql` në phpMyAdmin për të krijuar bazën e të dhënave.
-4. Hapni skedarin `config.php` dhe përditësoni kredencialet e bazës së të dhënave sipas nevojës.
+4. Hapni skedarin `dbconnection.php` dhe përditësoni kredencialet e bazës së të dhënave sipas nevojës.
 5. Nisni serverin dhe hapni aplikacionin në shfletues duke futur adresën `http://localhost/gjeje_mjeshtrin`.
 
 
