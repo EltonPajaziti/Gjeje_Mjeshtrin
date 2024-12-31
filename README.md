@@ -48,7 +48,7 @@ Kontributet janë të mirëpritura! Ju mund të kontribuoni duke:
 
 Për më shumë informata, ju lutemi na kontaktoni në [email](mailto:pajazitielton002@gmail.com).
 
-## Rreth Zhvilluesit
+
 ## Rreth Zhvilluesit
 Ky projekt është zhvilluar nga [**Elton Pajaziti**](https://github.com/EltonPajaziti).
 
