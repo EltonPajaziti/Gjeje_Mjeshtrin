@@ -3,7 +3,7 @@
         <!-- Links on the left -->
         <div class="navbar-left">
             <a href="index.php">BALLINA</a>
-            <a href="#vleresime">VLERËSIME</a>
+            <a href="#vleresimi">VLERËSIME</a>
         </div>
 
         <!-- Logo in the center -->

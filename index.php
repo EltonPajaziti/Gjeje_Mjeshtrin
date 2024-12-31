@@ -11,11 +11,13 @@
     <link href="CSS/header.css" rel="stylesheet">
     <link href="CSS/footer.css" rel="stylesheet">
     <link href="CSS/forma.css" rel="stylesheet">
+    <link href="CSS/feedback.css" rel="stylesheet">
    
 
 </head>
 <body>
 <?php include 'header.php' ;   ?>
+<?php include 'feedback.php' ;   ?>
 <?php include 'forma.php' ;?>
 <?php include 'footer.php' ;   ?>
 
