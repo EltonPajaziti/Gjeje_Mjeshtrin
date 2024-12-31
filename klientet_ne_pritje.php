@@ -43,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rezervim_id'], $_POST
 try {
     $stmt = $pdo->prepare("
         SELECT r.id AS rezervim_id, r.problemi, r.specifika, r.data, r.koha, r.created_at, r.menyra_pageses,
-               u.first_name, u.last_name, u.profile_picture, u.municipality, u.contact_number, u.email,
+               u.first_name, u.last_name, u.profile_picture, u.address, u.municipality, u.contact_number, u.email,
                m.sherbimet, m.cmimi, s.status
         FROM rezervimet r
         INNER JOIN mjeshtrat m ON r.mjeshter_id = m.id
@@ -157,13 +157,14 @@ try {
                 <img src="<?= htmlspecialchars($rezervim['profile_picture'] ?? 'PROFILE/default_profile.png') ?>" alt="Foto e profilit" class="profile">
                 <h2><?= htmlspecialchars($rezervim['first_name'] . ' ' . $rezervim['last_name']) ?></h2>
                 <p><strong>Rajoni:</strong> <?= htmlspecialchars($rezervim['municipality']) ?></p>
-                <p><strong>Adresa:</strong> <?= htmlspecialchars($rezervim['municipality']) ?></p>
+                <p><strong>Adresa:</strong> <?= htmlspecialchars($rezervim['address']) ?></p>
                 <p><strong>Numri Kontaktues:</strong> <?= htmlspecialchars($rezervim['contact_number']) ?></p>
-                <p><strong>Koha kur e ke rezervuar:</strong> <?= htmlspecialchars($rezervim['created_at']) ?></p>
+                <p><strong>Koha kur e ka rezervuar:</strong> <?= htmlspecialchars($rezervim['created_at']) ?></p>
                 <p><strong>Problemi:</strong> <?= htmlspecialchars($rezervim['problemi']) ?></p>
                 <p><strong>Specifika:</strong> <?= htmlspecialchars($rezervim['specifika']) ?></p>
-                <p><strong>Data kur dëshironi që mjeshtri të vie:</strong> <?= htmlspecialchars($rezervim['data']) ?></p>
-                <p><strong>Koha kur dëshironi që mjeshtri të vie:</strong> <?= htmlspecialchars($rezervim['koha']) ?></p>
+                <p><strong>Data kur dëshiron që mjeshtri të shkoj:</strong> <?= htmlspecialchars($rezervim['data']) ?></p>
+                <p><strong>Koha kur dëshiron që mjeshtri të shkoj:</strong> <?= htmlspecialchars($rezervim['koha']) ?></p>
+                <p><strong>Mënyra e Pagesës:</strong> <?= htmlspecialchars($rezervim['menyra_pageses']) ?></p>
                 <div class="buttons">
                     <form method="POST" style="display:inline;">
                         <input type="hidden" name="rezervim_id" value="<?= htmlspecialchars($rezervim['rezervim_id']) ?>">

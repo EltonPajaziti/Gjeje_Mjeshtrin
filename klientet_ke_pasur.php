@@ -28,7 +28,7 @@ try {
 try {
     $stmt = $pdo->prepare("
         SELECT r.id AS rezervim_id, r.problemi, r.specifika, r.data, r.koha, r.created_at, r.menyra_pageses,
-               u.first_name, u.last_name, u.profile_picture, u.municipality, u.contact_number, u.email,
+               u.first_name, u.last_name, u.profile_picture, u.address, u.municipality, u.contact_number, u.email,
                m.sherbimet, m.cmimi, s.status, v.koment, v.vleresim
         FROM rezervimet r
         INNER JOIN mjeshtrat m ON r.mjeshter_id = m.id
@@ -138,13 +138,14 @@ try {
                 <img src="<?= htmlspecialchars($rezervim['profile_picture'] ?? 'PROFILE/default_profile.png') ?>" alt="Foto e profilit" class="profile">
                 <h2><?= htmlspecialchars($rezervim['first_name'] . ' ' . $rezervim['last_name']) ?></h2>
                 <p><strong>Rajoni:</strong> <?= htmlspecialchars($rezervim['municipality']) ?></p>
-                <p><strong>Adresa:</strong> <?= htmlspecialchars($rezervim['municipality']) ?></p>
+                <p><strong>Adresa:</strong> <?= htmlspecialchars($rezervim['address']) ?></p>
                 <p><strong>Numri Kontaktues:</strong> <?= htmlspecialchars($rezervim['contact_number']) ?></p>
                 <p><strong>Koha kur e ke rezervuar:</strong> <?= htmlspecialchars($rezervim['created_at']) ?></p>
                 <p><strong>Problemi:</strong> <?= htmlspecialchars($rezervim['problemi']) ?></p>
                 <p><strong>Specifika:</strong> <?= htmlspecialchars($rezervim['specifika']) ?></p>
                 <p><strong>Data kur mjeshtri e përfundoi punën:</strong> <?= htmlspecialchars($rezervim['data']) ?></p>
                 <p><strong>Koha kur mjeshtri e përfundoi punën:</strong> <?= htmlspecialchars($rezervim['koha']) ?></p>
+                <p><strong>Mënyra e Pagesës:</strong> <?= htmlspecialchars($rezervim['menyra_pageses']) ?></p>
 
                 <?php if (!empty($rezervim['koment']) || !empty($rezervim['vleresim'])): ?>
                     <button class="view-review-button" onclick="toggleReviewContent(<?= $rezervim['rezervim_id'] ?>)">Shiko vlerësimin e klientit</button>
