@@ -235,10 +235,10 @@ try {
                 </a>
             </li>
             <li class="navbar-item">
-                <a href="mjeshtrit_ke_pasur.php">Menaxho Klientët</a>
+                <a href="#qytetari">Menaxho Qytetarët</a>
             </li>
             <li class="navbar-item">
-                <a href="mjeshtrit_pritje.php">Menaxho Mjeshtrit</a>
+                <a href="#mjeshtrat">Menaxho Mjeshtrit</a>
             </li>
             <li class="navbar-item">
                 <a href="index.php">Dil</a>
@@ -344,7 +344,7 @@ try {
 
 
     <div class="container custom-table-container">
-        <h2 class="mb-4">Menaxhimi i Qytetarëve</h2>
+        <h2 class="mb-4" id="qytetari">Menaxhimi i Qytetarëve</h2>
         <table class="table custom-table">
             <thead>
                 <tr>
@@ -375,7 +375,7 @@ try {
             </tbody>
         </table>
 
-        <h2 class="mb-4">Menaxhimi i Mjeshtrave</h2>
+        <h2 class="mb-4" id="mjeshtrat">Menaxhimi i Mjeshtrave</h2>
         <table class="table custom-table">
             <thead>
                 <tr>

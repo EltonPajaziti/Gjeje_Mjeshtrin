@@ -176,7 +176,7 @@ try {
                     </form>
                     <form method="POST" style="display:inline;">
                         <input type="hidden" name="rezervim_id" value="<?= htmlspecialchars($rezervim['rezervim_id']) ?>">
-                        <button type="submit" name="status" value="Përfunduar" class="complete">Eshtë Përfunduar</button>
+                        <button type="submit" name="status" value="Përfunduar" class="complete">Është Përfunduar</button>
                     </form>
                 </div>
             </div>
